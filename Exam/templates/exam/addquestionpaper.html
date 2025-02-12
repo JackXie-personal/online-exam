@@ -1,0 +1,132 @@
+{% extends 'base_faculty.html' %}
+{% block body %}
+<div class="mt-5"></div>
+<style>
+.question-config {
+  border: 1px solid #745959;
+  border-radius: 0.25rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.auto-generate-switch {
+  display: flex;
+  align-items: center;
+  margin: 1rem 0;
+}
+.auto-generate-switch label {
+  margin-left: 0.5rem;
+}
+.error-msg {
+  color: #dc3545;
+  font-size: 0.9rem;
+}
+</style>
+
+<div class="row">
+  <div class="col-md-2"></div>
+  <div class="col-md-8">
+    <div class="card paper-config-card">
+      <form method="POST" id="paperForm">
+        <div class="container py-4">
+          {% csrf_token %}
+          
+          <!-- 试卷基础信息 -->
+          <div class="form-group">
+            <label>试卷标题</label>
+            {{ examform.qPaperTitle }}
+          </div>
+
+          <!-- 题型配置模块 -->
+          <div class="question-config">
+            <h5>题目配置</h5>
+            
+            <!-- 题型数量配置 -->
+            <div class="row" id="typeConfig">
+              {% for value, label in question_types %}
+              <div class="col-md-4 mb-3">
+                <label>{{ label }}</label>
+                <input type="number" 
+                       class="form-control type-count" 
+                       data-type="{{ value }}"
+                       min="0" 
+                       placeholder="题目数量">
+              </div>
+              {% endfor %}
+            </div>
+
+            <!-- 总题数配置 -->
+            <div class="form-group">
+              <label>总题数</label>
+              {{ examform.total_questions }}
+            </div>
+          </div>
+
+          <!-- 自动生成开关 -->
+          <div class="auto-generate-switch">
+            <input type="checkbox" 
+                   id="autoGenerate" 
+                   name="auto_generate" 
+                   checked>
+            <label for="autoGenerate">自动生成试卷题目</label>
+          </div>
+
+          <!-- 提交按钮 -->
+          <div class="text-center">
+            <button class="btn btn-save" type="submit">
+              保存配置
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // 初始化题型配置
+  const initialTypeConfig = JSON.parse('{{ examform.question_types.value|default:"{}" }}');
+  Object.entries(initialTypeConfig).forEach(([type, count]) => {
+    document.querySelector(`input[data-type="${type}"]`).value = count;
+  });
+
+  // 表单提交处理
+  document.getElementById('paperForm').addEventListener('submit', function(e) {
+    const typeCounts = {};
+    let totalCount = 0;
+    
+    // 收集题型配置
+    document.querySelectorAll('.type-count').forEach(input => {
+      const count = parseInt(input.value) || 0;
+      if (count > 0) {
+        typeCounts[input.dataset.type] = count;
+        totalCount += count;
+      }
+    });
+
+    // 验证总题数
+    const targetTotal = parseInt(document.getElementById('id_total_questions').value) || 0;
+    if (totalCount !== targetTotal) {
+      alert('各题型数量之和需等于总题数！');
+      e.preventDefault();
+      return;
+    }
+
+    // 注入隐藏字段
+    const typeConfigInput = document.createElement('input');
+    typeConfigInput.type = 'hidden';
+    typeConfigInput.name = 'question_types';
+    typeConfigInput.value = JSON.stringify(typeCounts);
+    this.appendChild(typeConfigInput);
+  });
+
+  // 输入联动验证
+  document.getElementById('id_total_questions').addEventListener('input', function() {
+    const total = parseInt(this.value) || 0;
+    document.querySelectorAll('.type-count').forEach(input => {
+      input.max = total;
+    });
+  });
+});
+</script>
+{% endblock %}

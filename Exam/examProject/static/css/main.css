@@ -1,0 +1,76 @@
+/* 密码显示切换控件 */
+.showPasswordToggle {
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out; /* 添加精确的过渡属性 */
+  opacity: 0.8;
+}
+
+.showPasswordToggle:hover {
+  transform: scale(1.2);
+  opacity: 1;
+}
+
+/* 全局字体设置 */
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", 
+               "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji",
+               "Segoe UI Emoji"; /* 更现代的系统字体栈 */
+  line-height: 1.6;
+  color: #333;
+}
+
+/* 占位图像样式增强 */
+.bd-placeholder-img {
+  display: inline-block;
+  font-size: 1.125rem;
+  text-anchor: middle;
+  user-select: none;
+  background: linear-gradient(145deg, #f8f9fa 0%, #e9ecef 100%); /* 渐变色背景 */
+  border-radius: 0.5rem;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* 密码输入组效果 */
+.password-input-group {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.password-input-group:focus-within {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+/* 大屏幕响应式样式 */
+@media (min-width: 768px) {
+  .bd-placeholder-img-lg {
+    font-size: 3.5rem;
+    padding: 2rem;
+    margin: 1.5rem 0;
+  }
+
+  /* 响应式排版增强 */
+  body {
+    font-size: 1.1rem;
+  }
+}
+
+/* 新增：密码强度指示器 */
+.password-strength-meter {
+  height: 4px;
+  margin-top: 0.5rem;
+  background-color: #eee;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.strength-indicator {
+  height: 100%;
+  width: 0;
+  transition: width 0.5s ease;
+}
+
+.strength-weak { background-color: #dc3545; }
+.strength-medium { background-color: #ffc107; }
+.strength-strong { background-color: #28a745; }
